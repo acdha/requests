@@ -736,19 +736,10 @@ class Response(object):
     def content(self):
         """Content of the response, in bytes."""
 
-        if self._content is None:
-            # Read the contents.
-            try:
-                if self._content_consumed:
-                    raise RuntimeError(
-                        'The content for this response was already consumed')
+        if not self._content_consumed:
+            self._content = bytes().join(self.iter_content())
+            self._content_consumed = True
 
-                self._content = bytes().join(self.iter_content()) or None
-                # print repr(self._content)
-            except AttributeError:
-                self._content = None
-
-        self._content_consumed = True
         return self._content
 
 
